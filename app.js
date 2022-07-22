@@ -1,13 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
-mongoose.connect('mongodb://localhost:27017/mestodb');
-// Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
+const bodyParser = require('body-parser');
 
 const app = express();
+mongoose.connect('mongodb://localhost:27017/mestodb');
+const { PORT = 3000 } = process.env;
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`);
+// Middlewares
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: '62dac2ac0036a2c6707b0604',
+  };
+  next();
 });
+
+// Роуты
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
+// Запуск сервера
+app.listen(PORT);
