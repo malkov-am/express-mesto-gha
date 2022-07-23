@@ -106,7 +106,7 @@ async function removeLike(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'CastError':
-        res.status(404).send({
+        res.status(400).send({
           message: 'Передан некорректный _id карточки.',
         });
         break;
