@@ -44,9 +44,18 @@ async function deleteCard(req, res) {
       res.send({ message: 'Пост удалён' });
     }
   } catch (err) {
-    res.status(500).send({
-      message: 'Внутренняя ошибка сервера.',
-    });
+    switch (err.name) {
+      case 'CastError':
+        res.status(400).send({
+          message: 'Передан некорректный _id карточки.',
+        });
+        break;
+
+      default:
+        res.status(500).send({
+          message: 'Внутренняя ошибка сервера.',
+        });
+    }
   }
 }
 // Добавление лайка
@@ -57,17 +66,18 @@ async function addLike(req, res) {
       { $addToSet: { likes: req.user._id } },
       { new: true },
     ).populate(['owner', 'likes']);
-    res.send(card);
+    if (!card) {
+      res.status(404).send({
+        message: 'Передан несуществующий _id карточки.',
+      });
+    } else {
+      res.send(card);
+    }
   } catch (err) {
     switch (err.name) {
-      case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные для постановки/снятии лайка.',
-        });
-        break;
       case 'CastError':
-        res.status(404).send({
-          message: 'Передан несуществующий _id карточки.',
+        res.status(400).send({
+          message: 'Передан некорректный _id карточки.',
         });
         break;
 
@@ -86,17 +96,18 @@ async function removeLike(req, res) {
       { $pull: { likes: req.user._id } },
       { new: true },
     ).populate(['owner', 'likes']);
-    res.send(card);
+    if (!card) {
+      res.status(404).send({
+        message: 'Передан несуществующий _id карточки.',
+      });
+    } else {
+      res.send(card);
+    }
   } catch (err) {
     switch (err.name) {
-      case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные для постановки/снятии лайка.',
-        });
-        break;
       case 'CastError':
         res.status(404).send({
-          message: 'Передан несуществующий _id карточки.',
+          message: 'Передан некорректный _id карточки.',
         });
         break;
 

@@ -24,9 +24,18 @@ async function getUser(req, res) {
     }
     res.send(userData);
   } catch (err) {
-    res.status(500).send({
-      message: 'Внутренняя ошибка сервера.',
-    });
+    switch (err.name) {
+      case 'CastError':
+        res.status(400).send({
+          message: 'Переданы некорректные данные при зпросе _id.',
+        });
+        break;
+
+      default:
+        res.status(500).send({
+          message: 'Внутренняя ошибка сервера.',
+        });
+    }
   }
 }
 // Создание нового пользователя
@@ -59,7 +68,13 @@ async function updateProfile(req, res) {
       { name, about },
       { new: true, runValidators: true },
     );
-    res.send(updatedUserData);
+    if (!updatedUserData) {
+      res.status(404).send({
+        message: 'Пользователь по указанному _id не найден.',
+      });
+    } else {
+      res.send(updatedUserData);
+    }
   } catch (err) {
     switch (err.name) {
       case 'ValidationError':
@@ -69,7 +84,7 @@ async function updateProfile(req, res) {
         break;
       case 'CastError':
         res.status(404).send({
-          message: 'Пользователь с указанным _id не найден.',
+          message: 'Передан некорректный _id пользователя.',
         });
         break;
 
@@ -99,7 +114,7 @@ async function updateAvatar(req, res) {
         break;
       case 'CastError':
         res.status(404).send({
-          message: 'Пользователь с указанным _id не найден.',
+          message: 'Передан некорректный _id пользователя.',
         });
         break;
 
