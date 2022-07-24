@@ -1,6 +1,8 @@
+// Импорты
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { NOT_FOUND_ERROR_CODE } = require('./utils/constants');
 
 const app = express();
 mongoose.connect('mongodb://localhost:27017/mestodb');
@@ -21,7 +23,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 // Неправильный URL
 app.use('*', (req, res) => {
-  res.status(404).send({
+  res.status(NOT_FOUND_ERROR_CODE).send({
     message: 'Ресурс не найден. Проверьте URL и метод запроса.',
   });
 });

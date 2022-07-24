@@ -1,12 +1,17 @@
-// Импорт модели
+// Импорты
 const Card = require('../models/card');
+const {
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require('../utils/constants');
 // Получение всех карточек
 async function getCards(req, res) {
   try {
     const cards = await Card.find({}).populate(['owner', 'likes']);
     res.send(cards);
   } catch (err) {
-    res.status(500).send({
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({
       message: 'Внутренняя ошибка сервера.',
     });
   }
@@ -20,13 +25,13 @@ async function createCard(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные при создании карточки.',
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при создании карточки: ${err.message}`,
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -37,7 +42,7 @@ async function deleteCard(req, res) {
   try {
     const cardToDelete = await Card.findByIdAndRemove(req.params.cardId);
     if (!cardToDelete) {
-      res.status(404).send({
+      res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Карточка с указанным _id не найдена.',
       });
     } else {
@@ -46,13 +51,13 @@ async function deleteCard(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'CastError':
-        res.status(400).send({
+        res.status(BAD_REQUEST_ERROR_CODE).send({
           message: 'Передан некорректный _id карточки.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -67,7 +72,7 @@ async function addLike(req, res) {
       { new: true },
     ).populate(['owner', 'likes']);
     if (!card) {
-      res.status(404).send({
+      res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Передан несуществующий _id карточки.',
       });
     } else {
@@ -76,13 +81,13 @@ async function addLike(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'CastError':
-        res.status(400).send({
+        res.status(BAD_REQUEST_ERROR_CODE).send({
           message: 'Передан некорректный _id карточки.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -97,7 +102,7 @@ async function removeLike(req, res) {
       { new: true },
     ).populate(['owner', 'likes']);
     if (!card) {
-      res.status(404).send({
+      res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Передан несуществующий _id карточки.',
       });
     } else {
@@ -106,13 +111,13 @@ async function removeLike(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'CastError':
-        res.status(400).send({
+        res.status(BAD_REQUEST_ERROR_CODE).send({
           message: 'Передан некорректный _id карточки.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }

@@ -2,12 +2,11 @@
   "name": "express-mesto-gha",
   "version": "1.0.0",
   "description": "backend for mesto",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",

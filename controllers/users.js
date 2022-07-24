@@ -1,12 +1,17 @@
-// Импорт модели
+// Импорты
 const User = require('../models/user');
+const {
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require('../utils/constants');
 // Получение всех пользователей
 async function getUsers(req, res) {
   try {
     const usersData = await User.find({});
     res.send(usersData);
   } catch (err) {
-    res.status(500).send({
+    res.status(INTERNAL_SERVER_ERROR_CODE).send({
       message: 'Внутренняя ошибка сервера.',
     });
   }
@@ -17,7 +22,7 @@ async function getUser(req, res) {
   try {
     const userData = await User.findById(req.params.userId);
     if (!userData) {
-      res.status(404).send({
+      res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Пользователь по указанному _id не найден.',
       });
       return;
@@ -26,13 +31,13 @@ async function getUser(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'CastError':
-        res.status(400).send({
+        res.status(BAD_REQUEST_ERROR_CODE).send({
           message: 'Переданы некорректные данные при зпросе _id.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -47,13 +52,13 @@ async function createUser(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные при создании пользователя.',
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при создании пользователя: ${err.message}`,
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -69,7 +74,7 @@ async function updateProfile(req, res) {
       { new: true, runValidators: true },
     );
     if (!updatedUserData) {
-      res.status(404).send({
+      res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Пользователь по указанному _id не найден.',
       });
     } else {
@@ -78,18 +83,18 @@ async function updateProfile(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные при обновлении профиля.',
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при обновлении профиля: ${err.message}`,
         });
         break;
       case 'CastError':
-        res.status(404).send({
+        res.status(NOT_FOUND_ERROR_CODE).send({
           message: 'Передан некорректный _id пользователя.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
@@ -108,18 +113,18 @@ async function updateAvatar(req, res) {
   } catch (err) {
     switch (err.name) {
       case 'ValidationError':
-        res.status(400).send({
-          message: 'Переданы некорректные данные при обновлении аватара.',
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при обновлении аватара: ${err.message}`,
         });
         break;
       case 'CastError':
-        res.status(404).send({
+        res.status(NOT_FOUND_ERROR_CODE).send({
           message: 'Передан некорректный _id пользователя.',
         });
         break;
 
       default:
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: 'Внутренняя ошибка сервера.',
         });
     }
