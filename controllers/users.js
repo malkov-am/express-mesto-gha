@@ -89,7 +89,7 @@ async function login(req, res) {
       '24abcbc149fe562f21cb9a885e08109f84524c2504cc38a1d3b6d27e4c0492d1',
       {
         expiresIn: '7d',
-      }
+      },
     );
     res.send({ token });
   } catch (err) {
@@ -114,7 +114,7 @@ async function updateProfile(req, res) {
     const updatedUserData = await User.findByIdAndUpdate(
       req.user._id,
       { name, about },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     if (!updatedUserData) {
       res.status(NOT_FOUND_ERROR_CODE).send({
@@ -150,7 +150,7 @@ async function updateAvatar(req, res) {
     const updatedUserData = await User.findByIdAndUpdate(
       req.user._id,
       { avatar },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     res.send(updatedUserData);
   } catch (err) {

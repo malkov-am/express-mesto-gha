@@ -54,9 +54,7 @@ async function deleteCard(req, res) {
       });
       return;
     }
-    Card.findByIdAndRemove(req.params.cardId).then(() =>
-      res.send({ message: 'Пост удалён' })
-    );
+    Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Пост удалён' }));
   } catch (err) {
     switch (err.name) {
       case 'CastError':
@@ -78,7 +76,7 @@ async function addLike(req, res) {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
-      { new: true }
+      { new: true },
     ).populate(['owner', 'likes']);
     if (!card) {
       res.status(NOT_FOUND_ERROR_CODE).send({
@@ -108,7 +106,7 @@ async function removeLike(req, res) {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
-      { new: true }
+      { new: true },
     ).populate(['owner', 'likes']);
     if (!card) {
       res.status(NOT_FOUND_ERROR_CODE).send({

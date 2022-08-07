@@ -17,8 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default:
-        'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
     email: {
       type: String,
@@ -38,7 +37,7 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 module.exports = mongoose.model('user', userSchema);

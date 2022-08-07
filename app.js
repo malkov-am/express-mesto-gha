@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const { NOT_FOUND_ERROR_CODE } = require('./utils/constants');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -50,6 +50,9 @@ app.use('*', (req, res) => {
     message: 'Ресурс не найден. Проверьте URL и метод запроса.',
   });
 });
+
+// Обработчик ошибок celebrate
+app.use(errors());
 
 // Запуск сервера
 app.listen(PORT);
