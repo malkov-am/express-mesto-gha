@@ -3,12 +3,15 @@ const {
   getUsers,
   getUser,
   createUser,
+  getUserInfo,
   updateProfile,
   updateAvatar,
 } = require('../controllers/users');
 
 // Получение всех пользователей
 router.get('/', getUsers);
+// Получение информации о пользователе
+router.get('/me', getUserInfo);
 // Получение пользователя по id
 router.get('/:userId', getUser);
 // Создание нового пользователя

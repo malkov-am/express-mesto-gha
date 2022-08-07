@@ -2,6 +2,7 @@
 const Card = require('../models/card');
 const {
   BAD_REQUEST_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
 } = require('../utils/constants');
@@ -32,7 +33,7 @@ async function createCard(req, res) {
 
       default:
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: 'Внутренняя ошибка сервера.',
+          message: `${err.message} Внутренняя ошибка сервера.`,
         });
     }
   }
@@ -40,14 +41,22 @@ async function createCard(req, res) {
 // Удаление карточки
 async function deleteCard(req, res) {
   try {
-    const cardToDelete = await Card.findByIdAndRemove(req.params.cardId);
-    if (!cardToDelete) {
+    const card = await Card.findById(req.params.cardId);
+    if (!card) {
       res.status(NOT_FOUND_ERROR_CODE).send({
         message: 'Карточка с указанным _id не найдена.',
       });
-    } else {
-      res.send({ message: 'Пост удалён' });
+      return;
     }
+    if (card.owner._id.toString() !== req.user._id) {
+      res.status(UNAUTHORIZED_ERROR_CODE).send({
+        message: 'Вы не являетесь автором карточки',
+      });
+      return;
+    }
+    Card.findByIdAndRemove(req.params.cardId).then(() =>
+      res.send({ message: 'Пост удалён' })
+    );
   } catch (err) {
     switch (err.name) {
       case 'CastError':
@@ -69,7 +78,7 @@ async function addLike(req, res) {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
-      { new: true },
+      { new: true }
     ).populate(['owner', 'likes']);
     if (!card) {
       res.status(NOT_FOUND_ERROR_CODE).send({
@@ -99,7 +108,7 @@ async function removeLike(req, res) {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
-      { new: true },
+      { new: true }
     ).populate(['owner', 'likes']);
     if (!card) {
       res.status(NOT_FOUND_ERROR_CODE).send({
