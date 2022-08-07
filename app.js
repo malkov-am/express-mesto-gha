@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { celebrate, Joi } = require('celebrate');
 const { NOT_FOUND_ERROR_CODE } = require('./utils/constants');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -18,8 +19,31 @@ app.use(bodyParser.json());
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('/signin', login);
-app.use('/signup', createUser);
+// Вход пользователя в систему
+app.use(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  login,
+);
+// Создание нового пользователя
+app.use(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().uri(),
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  createUser,
+);
 // Неправильный URL
 app.use('*', (req, res) => {
   res.status(NOT_FOUND_ERROR_CODE).send({
