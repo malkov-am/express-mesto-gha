@@ -55,7 +55,13 @@ function createUser(req, res, next) {
       }
     })
     .then((user) => {
-      res.status(CREATED_CODE).send({ _id: user._id, email });
+      res.status(CREATED_CODE).send({
+        _id: user._id,
+        name,
+        about,
+        avatar,
+        email,
+      });
     })
     .catch(next);
 }
