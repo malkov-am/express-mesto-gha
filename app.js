@@ -45,14 +45,28 @@ app.use(
   createUser,
 );
 // Неправильный URL
-app.use('*', (req, res) => {
+app.use('*', (req, res, next) => {
   res.status(NOT_FOUND_ERROR_CODE).send({
     message: 'Ресурс не найден. Проверьте URL и метод запроса.',
   });
+  next();
 });
 
 // Обработчик ошибок celebrate
 app.use(errors());
+
+// Централизованный обработчик ошибок
+app.use((err, req, res, next) => {
+  if (err.status) {
+    res.status(err.status).send(err.message);
+    return;
+  }
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
+  });
+  next();
+});
 
 // Запуск сервера
 app.listen(PORT);
