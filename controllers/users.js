@@ -46,6 +46,10 @@ function createUser(req, res, next) {
     .catch((err) => {
       if (err.code === 11000) {
         throw new ConflictError({ message: 'Пользователь с таким email уже зарегестрирован.' });
+      } else if (err.name === 'ValidationError') {
+        throw new BadRequestError({
+          message: `Переданы некорректные данные при регистрации пользователя: ${err.message}`,
+        });
       } else {
         next(err);
       }
