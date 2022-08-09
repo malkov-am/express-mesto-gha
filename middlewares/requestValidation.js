@@ -24,28 +24,22 @@ const validateCreateCard = celebrate({
   }),
 });
 
-const validateDeleteCard = celebrate({
+const validateCardId = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
-  }),
-});
-
-const validateLike = celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().hex().length(24),
   }),
 });
 
 const validateGetUser = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    userId: Joi.string().hex().length(24),
   }),
 });
 
 const validateUpdateProfile = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
   }),
 });
 
@@ -59,8 +53,7 @@ module.exports = {
   validateSignup,
   validateSignin,
   validateCreateCard,
-  validateDeleteCard,
-  validateLike,
+  validateCardId,
   validateGetUser,
   validateUpdateProfile,
   validateUpdateAvatar,

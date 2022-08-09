@@ -22,7 +22,16 @@ function getUser(req, res, next) {
     .then((user) => {
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(
+          new BadRequestError({
+            message: `Переданы некорректные данные при зпросе _id: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Создание нового пользователя
@@ -36,23 +45,14 @@ function createUser(req, res, next) {
   } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
-    .catch((err) => {
-      if (err.code === 11000) {
-        throw new ConflictError({ message: 'Пользователь с таким email уже зарегестрирован.' });
-      } else if (err.name === 'ValidationError') {
-        throw new BadRequestError({
-          message: `Переданы некорректные данные при регистрации пользователя: ${err.message}`,
-        });
-      } else {
-        next(err);
-      }
+    .then((hash) => {
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      });
     })
     .then((user) => {
       res.status(CREATED_CODE).send({
@@ -63,7 +63,23 @@ function createUser(req, res, next) {
         email,
       });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        return next(
+          new ConflictError({
+            message: `Пользователь с таким email уже зарегестрирован: ${err.message}`,
+          }),
+        );
+      }
+      if (err.name === 'ValidationError') {
+        return next(
+          new BadRequestError({
+            message: `Переданы некорректные данные при регистрации пользователя: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Вход в систему
@@ -88,19 +104,19 @@ function updateProfile(req, res, next) {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(new NotFoundError({ message: 'Пользователь по указанному _id не найден.' }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequestError({
-          message: `Переданы некорректные данные при обновлении профиля: ${err.message}`,
-        });
-      } else {
-        throw err;
-      }
-    })
     .then((updatedUserData) => {
       res.send(updatedUserData);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(
+          new BadRequestError({
+            message: `Переданы некорректные данные при обновлении профиля: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Обновление аватара
@@ -108,19 +124,19 @@ function updateAvatar(req, res, next) {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(new NotFoundError({ message: 'Пользователь по указанному _id не найден.' }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequestError({
-          message: `Переданы некорректные данные при обновлении аватара: ${err.message}`,
-        });
-      } else {
-        throw err;
-      }
-    })
     .then((updatedUserData) => {
       res.send(updatedUserData);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(
+          new BadRequestError({
+            message: `Переданы некорректные данные при обновлении аватара: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Получение информации о пользователе

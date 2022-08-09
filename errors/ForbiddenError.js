@@ -1,7 +1,7 @@
 class ForbiddenError extends Error {
-  constructor(message, ...rest) {
-    super(...rest);
-    this.status = 403;
+  constructor({ message }) {
+    super(message);
+    this.statusCode = 403;
     this.message = message;
   }
 }

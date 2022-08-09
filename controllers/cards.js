@@ -19,14 +19,18 @@ function createCard(req, res, next) {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user })
     .catch((err) => {
-      throw new BadRequestError({
-        message: `Переданы некорректные данные при создании карточки: ${err.message}`,
-      });
+      if (err.name === 'ValidationError') {
+        return next(
+          new BadRequestError({
+            message: `Переданы некорректные данные при создании карточки: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
     })
     .then((card) => {
       res.send(card);
-    })
-    .catch(next);
+    });
 }
 
 // Удаление карточки
@@ -35,11 +39,20 @@ function deleteCard(req, res, next) {
     .orFail(new NotFoundError({ message: 'Карточка с указанным _id не найдена.' }))
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Вы не являетесь автором карточки' });
+        return next(ForbiddenError({ message: 'Вы не являетесь автором карточки' }));
       }
-      Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Пост удалён' }));
+      return Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Пост удалён' }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(
+          new BadRequestError({
+            message: `Передан некорректный _id карточки: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Добавление лайка
@@ -50,7 +63,16 @@ function addLike(req, res, next) {
     .then((card) => {
       res.send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(
+          new BadRequestError({
+            message: `Передан некорректный _id карточки: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 // Снятие лайка
@@ -61,7 +83,16 @@ function removeLike(req, res, next) {
     .then((card) => {
       res.send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(
+          new BadRequestError({
+            message: `Передан некорректный _id карточки: ${err.message}`,
+          }),
+        );
+      }
+      return next(err);
+    });
 }
 
 module.exports = {
