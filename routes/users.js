@@ -1,4 +1,3 @@
-const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
 const {
   getUsers,
@@ -7,42 +6,22 @@ const {
   updateProfile,
   updateAvatar,
 } = require('../controllers/users');
+const {
+  validateGetUser,
+  validateUpdateProfile,
+  validateUpdateAvatar,
+} = require('../middlewares/requestValidation');
 
 // Получение всех пользователей
 router.get('/', getUsers);
 // Получение информации о пользователе
 router.get('/me', getUserInfo);
 // Получение пользователя по id
-router.get(
-  '/:userId',
-  celebrate({
-    params: Joi.object().keys({
-      userId: Joi.string().alphanum().length(24),
-    }),
-  }),
-  getUser,
-);
+router.get('/:userId', validateGetUser, getUser);
 
 // Обновление данных пользователя
-router.patch(
-  '/me',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(30),
-    }),
-  }),
-  updateProfile,
-);
+router.patch('/me', validateUpdateProfile, updateProfile);
 // обновление аватара поьзователя
-router.patch(
-  '/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().required().uri(),
-    }),
-  }),
-  updateAvatar,
-);
+router.patch('/me/avatar', validateUpdateAvatar, updateAvatar);
 
 module.exports = router;
