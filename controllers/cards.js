@@ -39,7 +39,7 @@ function deleteCard(req, res, next) {
     .orFail(new NotFoundError({ message: 'Карточка с указанным _id не найдена.' }))
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id) {
-        return next(ForbiddenError({ message: 'Вы не являетесь автором карточки' }));
+        return next(new ForbiddenError({ message: 'Вы не являетесь автором карточки' }));
       }
       return Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Пост удалён' }));
     })
