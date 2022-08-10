@@ -1,5 +1,13 @@
 const { celebrate, Joi } = require('celebrate');
 
+// Кастомная валидация mongoose id
+function validateId(id, helper) {
+  if (/^[0-9a-fA-F]{24}$/.test(id)) {
+    return id;
+  }
+  return helper.message('Передан некорретный id.');
+}
+
 const validateSignup = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -26,13 +34,13 @@ const validateCreateCard = celebrate({
 
 const validateCardId = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
+    cardId: Joi.string().custom(validateId),
   }),
 });
 
-const validateGetUser = celebrate({
+const validateUserId = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
+    userId: Joi.string().custom(validateId),
   }),
 });
 
@@ -54,7 +62,7 @@ module.exports = {
   validateSignin,
   validateCreateCard,
   validateCardId,
-  validateGetUser,
+  validateUserId,
   validateUpdateProfile,
   validateUpdateAvatar,
 };

@@ -7,7 +7,7 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 const {
-  validateGetUser,
+  validateUserId,
   validateUpdateProfile,
   validateUpdateAvatar,
 } = require('../middlewares/requestValidation');
@@ -17,7 +17,7 @@ router.get('/', getUsers);
 // Получение информации о пользователе
 router.get('/me', getUserInfo);
 // Получение пользователя по id
-router.get('/:userId', validateGetUser, getUser);
+router.get('/:userId', validateUserId, getUser);
 
 // Обновление данных пользователя
 router.patch('/me', validateUpdateProfile, updateProfile);

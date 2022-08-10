@@ -6,6 +6,8 @@ const { CREATED_CODE } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
+
+const { JWT_SECRET = 'very-secret-key' } = process.env;
 // Получение всех пользователей
 function getUsers(req, res, next) {
   User.find({})
@@ -87,7 +89,7 @@ function login(req, res, next) {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        '24abcbc149fe562f21cb9a885e08109f84524c2504cc38a1d3b6d27e4c0492d1',
+        JWT_SECRET,
         {
           expiresIn: '7d',
         },
