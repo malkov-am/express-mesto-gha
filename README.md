@@ -1,9 +1,6 @@
-[![Tests for sprint 13](https://github.com/gWildCat/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/gWildCat/express-mesto-gha/actions/workflows/tests-13-sprint.yml)
-
-[![Tests for sprint 14](https://github.com/gWildCat/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/gWildCat/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
-
 # Проект Mesto бэкенд
 Сервис "Место" - интерактивная страница, куда можно добавлять фотографии, удалять их и ставить лайки.
+В проекте реализована валидация входящих запросов библиотекой Joi. Для валидации запросов с id используется кастомная валидация на регулярном выражении. Схемы валидируются как стандартными средствами mongoose, так и библиотекой validator. Для создания токенов для защищенных маршрутов применяется библиотека bcrypt. Реализована централизованная обработка ошибок. Для приведения кода к единому стилю используются prettier и ESLint.
 
 ## При создании сайта использовались следующие технологии:
 - Node.js
